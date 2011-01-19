@@ -1,0 +1,6 @@
+ofxGameCamera:
+
+a super simple W-S-A-D + MouseLook style game camera using new ofCamera extensions.
+
+don't get fragged!
+
