@@ -25,6 +25,10 @@
 		E4C2424910CC5A17004149E2 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4C2424610CC5A17004149E2 /* IOKit.framework */; };
 		E4EB6799138ADC1D00A09F29 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BBAB23BE13894E4700AA2426 /* GLUT.framework */; };
 		E76B8EC613DF42650091E482 /* ofxGameCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E76B8EC413DF42650091E482 /* ofxGameCamera.cpp */; };
+		E76B8F1513DFA1E50091E482 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E76B8F0E13DFA1E50091E482 /* tinyxml.cpp */; };
+		E76B8F1613DFA1E50091E482 /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E76B8F1013DFA1E50091E482 /* tinyxmlerror.cpp */; };
+		E76B8F1713DFA1E50091E482 /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E76B8F1113DFA1E50091E482 /* tinyxmlparser.cpp */; };
+		E76B8F1813DFA1E50091E482 /* ofxXmlSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E76B8F1313DFA1E50091E482 /* ofxXmlSettings.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +85,13 @@
 		E4EB6923138AFD0F00A09F29 /* Project.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
 		E76B8EC413DF42650091E482 /* ofxGameCamera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxGameCamera.cpp; sourceTree = "<group>"; };
 		E76B8EC513DF42650091E482 /* ofxGameCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxGameCamera.h; sourceTree = "<group>"; };
+		E76B8F0C13DFA1E50091E482 /* install.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = install.xml; sourceTree = "<group>"; };
+		E76B8F0E13DFA1E50091E482 /* tinyxml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxml.cpp; sourceTree = "<group>"; };
+		E76B8F0F13DFA1E50091E482 /* tinyxml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinyxml.h; sourceTree = "<group>"; };
+		E76B8F1013DFA1E50091E482 /* tinyxmlerror.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlerror.cpp; sourceTree = "<group>"; };
+		E76B8F1113DFA1E50091E482 /* tinyxmlparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlparser.cpp; sourceTree = "<group>"; };
+		E76B8F1313DFA1E50091E482 /* ofxXmlSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxXmlSettings.cpp; sourceTree = "<group>"; };
+		E76B8F1413DFA1E50091E482 /* ofxXmlSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxXmlSettings.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +122,7 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
+				E76B8F0B13DFA1E50091E482 /* ofxXmlSettings */,
 				E76B8EBF13DF42570091E482 /* ofxGameCamera */,
 			);
 			name = addons;
@@ -203,12 +215,43 @@
 		E76B8EC313DF42650091E482 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				E76B8EC413DF42650091E482 /* ofxGameCamera.cpp */,
 				E76B8EC513DF42650091E482 /* ofxGameCamera.h */,
+				E76B8EC413DF42650091E482 /* ofxGameCamera.cpp */,
 			);
 			name = src;
 			path = ../src;
 			sourceTree = SOURCE_ROOT;
+		};
+		E76B8F0B13DFA1E50091E482 /* ofxXmlSettings */ = {
+			isa = PBXGroup;
+			children = (
+				E76B8F0C13DFA1E50091E482 /* install.xml */,
+				E76B8F0D13DFA1E50091E482 /* libs */,
+				E76B8F1213DFA1E50091E482 /* src */,
+			);
+			name = ofxXmlSettings;
+			path = ../../ofxXmlSettings;
+			sourceTree = SOURCE_ROOT;
+		};
+		E76B8F0D13DFA1E50091E482 /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				E76B8F0E13DFA1E50091E482 /* tinyxml.cpp */,
+				E76B8F0F13DFA1E50091E482 /* tinyxml.h */,
+				E76B8F1013DFA1E50091E482 /* tinyxmlerror.cpp */,
+				E76B8F1113DFA1E50091E482 /* tinyxmlparser.cpp */,
+			);
+			path = libs;
+			sourceTree = "<group>";
+		};
+		E76B8F1213DFA1E50091E482 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				E76B8F1313DFA1E50091E482 /* ofxXmlSettings.cpp */,
+				E76B8F1413DFA1E50091E482 /* ofxXmlSettings.h */,
+			);
+			path = src;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -296,6 +339,10 @@
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* testApp.cpp in Sources */,
 				E76B8EC613DF42650091E482 /* ofxGameCamera.cpp in Sources */,
+				E76B8F1513DFA1E50091E482 /* tinyxml.cpp in Sources */,
+				E76B8F1613DFA1E50091E482 /* tinyxmlerror.cpp in Sources */,
+				E76B8F1713DFA1E50091E482 /* tinyxmlparser.cpp in Sources */,
+				E76B8F1813DFA1E50091E482 /* ofxXmlSettings.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

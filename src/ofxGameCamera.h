@@ -9,6 +9,7 @@
 
 #include "ofMain.h"
 
+#include "ofxXmlSettings.h"
 
 class ofxGameCamera : public ofCamera {
   public:
@@ -26,10 +27,23 @@ class ofxGameCamera : public ofCamera {
 	
 	float rotationX;
 	float rotationY;
+	float rotationZ;	
 	
 	float speed;
 	
 	virtual void begin(ofRectangle rect = ofGetWindowRect());
+	void updateRotation();
 	
 	ofVec2f lastMouse;
+	bool usemouse;
+
+	bool useArrowKeys;
+	
+	bool autosavePosition;
+	
+	string cameraPositionFile;
+	void saveCameraPosition();
+	void loadCameraPosition();
+	
+	
 };
