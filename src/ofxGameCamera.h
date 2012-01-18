@@ -33,6 +33,7 @@ class ofxGameCamera : public ofCamera {
 	
 	virtual void begin(ofRectangle rect = ofGetWindowRect());
 	void updateRotation();
+	ofNode targetNode;
 	
 	ofVec2f lastMouse;
 	bool usemouse;
