@@ -39,7 +39,6 @@ class ofxGameCamera : public ofCamera {
 	bool usemouse;
 
 	bool useArrowKeys;
-	
 	bool autosavePosition;
 	
 	string cameraPositionFile;
