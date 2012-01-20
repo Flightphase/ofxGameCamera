@@ -40,6 +40,8 @@ class ofxGameCamera : public ofCamera {
 
 	bool useArrowKeys;
 	bool autosavePosition;
+	bool applyRotation;
+	bool applyTranslation;
 	
 	string cameraPositionFile;
 	void saveCameraPosition();

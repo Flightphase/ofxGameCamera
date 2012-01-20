@@ -42,6 +42,9 @@ ofxGameCamera::ofxGameCamera()
 	autosavePosition = false;
 	useArrowKeys = true;
 
+	applyRotation = true;
+	applyTranslation = true;
+
 	cameraPositionFile =  "_gameCameraPosition.xml";
 }
 
@@ -49,10 +52,9 @@ void ofxGameCamera::begin(ofRectangle rect)
 {
 	ofVec3f startPos = getPosition();
 	ofVec2f startRot = ofVec3f(rotationX, rotationY, rotationZ);
-	targetNode.setOrientation(getOrientationQuat());
 
 	//forward
-    if(usemouse){
+    if(applyTranslation){
         if(ofGetKeyPressed('w') || (useArrowKeys && ofGetKeyPressed(OF_KEY_UP)) ){
             targetNode.dolly(-speed);
 			//dolly(-speed);
@@ -86,8 +88,9 @@ void ofxGameCamera::begin(ofRectangle rect)
 		//TODO make variable
 		setPosition(getPosition() + (targetNode.getPosition() - getPosition()) *.2);
 		//setPosition(targetNode.getPosition());
-		
+	}
 		//TODO make variable
+	if(applyRotation){	
 		if(ofGetKeyPressed('r')){
 			rotationZ += 2;
 			updateRotation();
@@ -97,9 +100,10 @@ void ofxGameCamera::begin(ofRectangle rect)
 			updateRotation();
 		}
 	}
+	
 
 	ofVec2f mouse( ofGetMouseX(), ofGetMouseY() );
-	if(usemouse && ofGetMousePressed(0)){
+	if(usemouse && ofGetMousePressed(0) && applyRotation){
 		
 		rotationX += (mouse.x - lastMouse.x) * sensitivityX;
 		rotationX = ClampAngle(rotationX, minimumX, maximumX);
@@ -107,9 +111,12 @@ void ofxGameCamera::begin(ofRectangle rect)
 		rotationY += (mouse.y - lastMouse.y) * sensitivityY;
 		rotationY = ClampAngle(rotationY, minimumY, maximumY);
 		
-		cout << "Rotation X " << rotationX << " Rotation Y " << rotationY << " Rotation Z " << rotationZ << " up vec " << getYAxis() << endl;
+//		cout << "Rotation X " << rotationX << " Rotation Y " << rotationY << " Rotation Z " << rotationZ << " up vec " << getYAxis() << endl;
+//		cout << "Rotation X " << rotationX << " Rotation Y " << rotationY << " Rotation Z " << rotationZ << endl;
+		
+	}
+	if(applyRotation){
 		updateRotation();		
-		cout << "Rotation X " << rotationX << " Rotation Y " << rotationY << " Rotation Z " << rotationZ << endl;
 	}
 	
 	lastMouse = mouse;
@@ -123,10 +130,15 @@ void ofxGameCamera::begin(ofRectangle rect)
 
 void ofxGameCamera::updateRotation()
 {
-	setOrientation(ofQuaternion()); //reset
+	setOrientation(ofQuaternion(0,0,0,1)); //reset
 	rotate(ofQuaternion(-rotationX, getYAxis()));
 	rotate(ofQuaternion(-rotationY, getXAxis()));
-//	rotate(ofQuaternion(-rotationZ, getZAxis()));
+	rotate(ofQuaternion(-rotationZ, getZAxis()));
+	targetNode.setOrientation(getOrientationQuat());
+
+	//lookAt(getPosition()+getLookAtDir()*3, ofVec3f(0,1,0));
+	
+//	targetNode.lookAt(getPosition()+getXAxis()*3, ofVec3f(0,1,0));
 }
 
 void ofxGameCamera::saveCameraPosition()

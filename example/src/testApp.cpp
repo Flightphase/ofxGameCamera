@@ -2,12 +2,15 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){
-	
+	ofSetFrameRate(30);
 	for(int i = 0; i < 100; i++){
 		ofNode n;
 		n.setPosition(ofVec3f(ofRandom(-ofGetWidth(),ofGetWidth()), ofRandom(-ofGetHeight(), ofGetHeight()), ofRandom(-1000, 1000)));
 		nodes.push_back(n);
 	}
+	
+	camera.autosavePosition = true;
+	camera.loadCameraPosition();
 	
 }
 
