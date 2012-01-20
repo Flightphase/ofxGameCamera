@@ -104,12 +104,19 @@ void ofxGameCamera::begin(ofRectangle rect)
 
 	ofVec2f mouse( ofGetMouseX(), ofGetMouseY() );
 	if(usemouse && ofGetMousePressed(0) && applyRotation){
-		
-		rotationX += (mouse.x - lastMouse.x) * sensitivityX;
-		rotationX = ClampAngle(rotationX, minimumX, maximumX);
 
-		rotationY += (mouse.y - lastMouse.y) * sensitivityY;
-		rotationY = ClampAngle(rotationY, minimumY, maximumY);
+		
+		targetXRot += (mouse.x - lastMouse.x) * sensitivityX;
+		targetXRot = ClampAngle(targetXRot, minimumX, maximumX);
+
+		targetYRot += (mouse.y - lastMouse.y) * sensitivityY;
+		targetYRot = ClampAngle(targetYRot, minimumY, maximumY);
+		
+//		rotationX += (mouse.x - lastMouse.x) * sensitivityX;
+//		rotationX = ClampAngle(rotationX, minimumX, maximumX);
+//
+//		rotationY += (mouse.y - lastMouse.y) * sensitivityY;
+//		rotationY = ClampAngle(rotationY, minimumY, maximumY);
 		
 //		cout << "Rotation X " << rotationX << " Rotation Y " << rotationY << " Rotation Z " << rotationZ << " up vec " << getYAxis() << endl;
 //		cout << "Rotation X " << rotationX << " Rotation Y " << rotationY << " Rotation Z " << rotationZ << endl;
@@ -130,15 +137,14 @@ void ofxGameCamera::begin(ofRectangle rect)
 
 void ofxGameCamera::updateRotation()
 {
+	rotationX += (targetXRot - rotationX) *.2;
+	rotationY += (targetYRot - rotationY) *.2;
+	
 	setOrientation(ofQuaternion(0,0,0,1)); //reset
 	rotate(ofQuaternion(-rotationX, getYAxis()));
 	rotate(ofQuaternion(-rotationY, getXAxis()));
 	rotate(ofQuaternion(-rotationZ, getZAxis()));
 	targetNode.setOrientation(getOrientationQuat());
-
-	//lookAt(getPosition()+getLookAtDir()*3, ofVec3f(0,1,0));
-	
-//	targetNode.lookAt(getPosition()+getXAxis()*3, ofVec3f(0,1,0));
 }
 
 void ofxGameCamera::saveCameraPosition()
@@ -162,6 +168,7 @@ void ofxGameCamera::saveCameraPosition()
 	savePosition.addValue("X", rotationX);
 	savePosition.addValue("Y", rotationY);
 	savePosition.addValue("Z", rotationZ);
+
 //	savePosition.addValue("FOV", getFov());
 	savePosition.popTag(); //pop rotation
 
@@ -186,9 +193,9 @@ void ofxGameCamera::loadCameraPosition()
 		loadPosition.popTag();
 
 		loadPosition.pushTag("rotation");
-		rotationX = loadPosition.getValue("X", 0.);
-		rotationY = loadPosition.getValue("Y", 0.);
-		rotationZ = loadPosition.getValue("Z", 0.);
+		targetXRot = rotationX = loadPosition.getValue("X", 0.);
+		targetYRot = rotationY = loadPosition.getValue("Y", 0.);
+		targetZRot = rotationZ = loadPosition.getValue("Z", 0.);
 		float fov = loadPosition.getValue("FOV", -1);
 		if(fov != -1){
 			setFov(fov);

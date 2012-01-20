@@ -28,6 +28,9 @@ class ofxGameCamera : public ofCamera {
 	float rotationX;
 	float rotationY;
 	float rotationZ;	
+	float targetXRot;
+	float targetYRot;
+	float targetZRot;
 	
 	float speed;
 	
