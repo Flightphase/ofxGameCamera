@@ -8,8 +8,7 @@
 
 #include "ofxGameCamera.h"
 
-static float ClampAngle (float angle, float min, float max)
-{
+static float ClampAngle (float angle, float min, float max) {
 	if (angle < -360.0f)
 		angle += 360.f;
 	if (angle > 360.0f)
@@ -18,8 +17,7 @@ static float ClampAngle (float angle, float min, float max)
 }
 
 
-ofxGameCamera::ofxGameCamera()
-{
+ofxGameCamera::ofxGameCamera() {
 	
 	sensitivityX = 0.15f;
 	sensitivityY = 0.15f;
@@ -45,11 +43,12 @@ ofxGameCamera::ofxGameCamera()
 	applyRotation = true;
 	applyTranslation = true;
 
+	rollSpeed = 2;
+	
 	cameraPositionFile =  "_gameCameraPosition.xml";
 }
 
-void ofxGameCamera::begin(ofRectangle rect)
-{
+void ofxGameCamera::begin(ofRectangle rect) { 
 	ofVec3f startPos = getPosition();
 	ofVec2f startRot = ofVec3f(rotationX, rotationY, rotationZ);
 
@@ -92,11 +91,11 @@ void ofxGameCamera::begin(ofRectangle rect)
 		//TODO make variable
 	if(applyRotation){	
 		if(ofGetKeyPressed('r')){
-			rotationZ += 2;
+			rotationZ += rollSpeed;
 			updateRotation();
         }
 		if(ofGetKeyPressed('q')){
-			rotationZ -= 2;
+			rotationZ -= rollSpeed;
 			updateRotation();
 		}
 	}

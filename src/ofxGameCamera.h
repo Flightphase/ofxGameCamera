@@ -32,6 +32,7 @@ class ofxGameCamera : public ofCamera {
 	float targetYRot;
 	float targetZRot;
 	
+	float rollSpeed;
 	float speed;
 	
 	virtual void begin(ofRectangle rect = ofGetWindowRect());
