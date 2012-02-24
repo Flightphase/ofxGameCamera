@@ -31,6 +31,10 @@ ofxGameCamera::ofxGameCamera() {
 	rotationX = 0.0f;
 	rotationY = 0.0f;
 	rotationZ = 0.0f;
+
+	targetXRot = 0.0f;
+	targetYRot = 0.0f;
+	targetZRot = 0.0f;
 	
 	speed = 10.0f;
 	
@@ -44,7 +48,8 @@ ofxGameCamera::ofxGameCamera() {
 	applyTranslation = true;
 
 	rollSpeed = 2;
-	
+
+
 	cameraPositionFile =  "_gameCameraPosition.xml";
 }
 
@@ -81,46 +86,36 @@ void ofxGameCamera::begin(ofRectangle rect) {
 
         if(ofGetKeyPressed('e') || (useArrowKeys && ofGetKeyPressed(OF_KEY_PAGE_UP)) ){
             targetNode.boom(speed);
-			//boom(speed);
         }
 		
 		//TODO make variable
 		setPosition(getPosition() + (targetNode.getPosition() - getPosition()) *.2);
-		//setPosition(targetNode.getPosition());
 	}
-		//TODO make variable
+	
 	if(applyRotation){	
 		if(ofGetKeyPressed('r')){
-			rotationZ += rollSpeed;
-			updateRotation();
+			targetZRot += rollSpeed;
+//			updateRotation();		
         }
 		if(ofGetKeyPressed('q')){
-			rotationZ -= rollSpeed;
-			updateRotation();
+			targetZRot -= rollSpeed;
+//			updateRotation();		
 		}
 	}
 	
 
 	ofVec2f mouse( ofGetMouseX(), ofGetMouseY() );
-	if(usemouse && ofGetMousePressed(0) && applyRotation){
-
+	if(usemouse && applyRotation && ofGetMousePressed(0)){
+				
+		float dx = (mouse.x - lastMouse.x) * sensitivityX;
+		float dy = (mouse.y - lastMouse.y) * sensitivityY;
+		targetXRot += dx;
+		targetYRot += dy;
 		
-		targetXRot += (mouse.x - lastMouse.x) * sensitivityX;
-		targetXRot = ClampAngle(targetXRot, minimumX, maximumX);
-
-		targetYRot += (mouse.y - lastMouse.y) * sensitivityY;
 		targetYRot = ClampAngle(targetYRot, minimumY, maximumY);
-		
-//		rotationX += (mouse.x - lastMouse.x) * sensitivityX;
-//		rotationX = ClampAngle(rotationX, minimumX, maximumX);
-//
-//		rotationY += (mouse.y - lastMouse.y) * sensitivityY;
-//		rotationY = ClampAngle(rotationY, minimumY, maximumY);
-		
-//		cout << "Rotation X " << rotationX << " Rotation Y " << rotationY << " Rotation Z " << rotationZ << " up vec " << getYAxis() << endl;
-//		cout << "Rotation X " << rotationX << " Rotation Y " << rotationY << " Rotation Z " << rotationZ << endl;
-		
+		targetXRot = ClampAngle(targetXRot, minimumX, maximumX);
 	}
+	
 	if(applyRotation){
 		updateRotation();		
 	}
@@ -134,15 +129,24 @@ void ofxGameCamera::begin(ofRectangle rect) {
 	ofCamera::begin(rect);
 }
 
+void ofxGameCamera::setAnglesFromOrientation(){
+	ofVec3f rotation = getOrientationEuler();
+	rotationX = targetXRot = -rotation.y;
+	rotationY = targetYRot = -rotation.z;
+	rotationZ = targetZRot = -rotation.x;
+}
+
 void ofxGameCamera::updateRotation()
 {
 	rotationX += (targetXRot - rotationX) *.2;
 	rotationY += (targetYRot - rotationY) *.2;
+	rotationZ += (targetZRot - rotationZ) *.2;
 	
-	setOrientation(ofQuaternion(0,0,0,1)); //reset
-	rotate(ofQuaternion(-rotationX, getYAxis()));
-	rotate(ofQuaternion(-rotationY, getXAxis()));
-	rotate(ofQuaternion(-rotationZ, getZAxis()));
+	setOrientation(ofQuaternion(0,0,0,1)); //reset	
+	setOrientation(getOrientationQuat() * ofQuaternion(-rotationZ, getZAxis()));
+	setOrientation(getOrientationQuat() * ofQuaternion(-rotationX, getYAxis()));
+	setOrientation(getOrientationQuat() * ofQuaternion(-rotationY, getXAxis()));
+		
 	targetNode.setOrientation(getOrientationQuat());
 }
 
@@ -168,7 +172,6 @@ void ofxGameCamera::saveCameraPosition()
 	savePosition.addValue("Y", rotationY);
 	savePosition.addValue("Z", rotationZ);
 
-//	savePosition.addValue("FOV", getFov());
 	savePosition.popTag(); //pop rotation
 
 	savePosition.popTag(); //camera;

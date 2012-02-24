@@ -9,9 +9,8 @@ void testApp::setup(){
 		nodes.push_back(n);
 	}
 	
-	camera.autosavePosition = true;
-	camera.loadCameraPosition();
-	
+//	camera.autosavePosition = true;
+//	camera.loadCameraPosition();	
 }
 
 //--------------------------------------------------------------
@@ -33,13 +32,11 @@ void testApp::draw(){
 	
 	ofSetColor(255);
 	
-	ofDrawBitmapString("camera controls: click and drag the mouse to look.\nw: forward, s: backwards\na: strafe left\nd: strafe right\ne: dolly up\nc: dolly down", ofPoint(30, 30));
+	ofDrawBitmapString("camera controls: click and drag the mouse to look.\nw: forward, s: backwards\na: strafe left\nd: strafe right\ne: boom up\nc: boom down", ofPoint(30, 30));
 }
 
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
-	
-
 }
 
 //--------------------------------------------------------------
