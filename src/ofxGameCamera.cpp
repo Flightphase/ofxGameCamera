@@ -53,37 +53,42 @@ ofxGameCamera::ofxGameCamera() {
 	cameraPositionFile =  "_gameCameraPosition.xml";
 }
 
-void ofxGameCamera::begin(ofRectangle rect) { 
-	ofVec3f startPos = getPosition();
-	ofVec2f startRot = ofVec3f(rotationX, rotationY, rotationZ);
+void ofxGameCamera::setup(){
+	ofAddListener(ofEvents().update, this, &ofxGameCamera::update);
+}
 
+void ofxGameCamera::update(ofEventArgs& args){	
+    
+    ofVec3f startPos = getPosition();
+	ofVec2f startRot = ofVec3f(rotationX, rotationY, rotationZ);
+    
 	//forward
     if(applyTranslation){
         if(ofGetKeyPressed('w') || (useArrowKeys && ofGetKeyPressed(OF_KEY_UP)) ){
             targetNode.dolly(-speed);
 			//dolly(-speed);
         }
-
+        
         if(ofGetKeyPressed('s') || (useArrowKeys && ofGetKeyPressed(OF_KEY_DOWN)) ){
             targetNode.dolly(speed);
 			//dolly(speed);
         }
-
+        
         if(ofGetKeyPressed('a') || (useArrowKeys && ofGetKeyPressed(OF_KEY_LEFT)) ){
             targetNode.truck(-speed);
 			//truck(-speed);
         }
-
+        
         if(ofGetKeyPressed('d') || (useArrowKeys && ofGetKeyPressed(OF_KEY_RIGHT)) ){
             targetNode.truck(speed);
 			//truck(speed);
         }
-
+        
         if(ofGetKeyPressed('c') || (useArrowKeys && ofGetKeyPressed(OF_KEY_PAGE_DOWN)) ){
             targetNode.boom(-speed);
 			//boom(-speed);
         }
-
+        
         if(ofGetKeyPressed('e') || (useArrowKeys && ofGetKeyPressed(OF_KEY_PAGE_UP)) ){
             targetNode.boom(speed);
         }
@@ -95,18 +100,20 @@ void ofxGameCamera::begin(ofRectangle rect) {
 	if(applyRotation){	
 		if(ofGetKeyPressed('r')){
 			targetZRot += rollSpeed;
-//			updateRotation();		
+            applyRotation = true;
+            //			updateRotation();		
         }
 		if(ofGetKeyPressed('q')){
 			targetZRot -= rollSpeed;
-//			updateRotation();		
+            //			updateRotation();	
+            applyRotation = true;
 		}
 	}
 	
-
+    
 	ofVec2f mouse( ofGetMouseX(), ofGetMouseY() );
 	if(usemouse && applyRotation && ofGetMousePressed(0)){
-				
+        
 		float dx = (mouse.x - lastMouse.x) * sensitivityX;
 		float dy = (mouse.y - lastMouse.y) * sensitivityY;
 		targetXRot += dx;
@@ -121,11 +128,13 @@ void ofxGameCamera::begin(ofRectangle rect) {
 	}
 	
 	lastMouse = mouse;
-
+    
 	if(!ofGetMousePressed(0) && autosavePosition && (startPos != getPosition() || startRot != ofVec3f(rotationX, rotationY, rotationZ))){
 		saveCameraPosition();
 	}
+}
 
+void ofxGameCamera::begin(ofRectangle rect) { 
 	ofCamera::begin(rect);
 }
 

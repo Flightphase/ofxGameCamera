@@ -15,7 +15,11 @@ class ofxGameCamera : public ofCamera {
   public:
 	
 	ofxGameCamera();
-	
+
+	void setup();
+    
+    void update(ofEventArgs& args);
+    
 	float sensitivityX;
 	float sensitivityY;
 	
