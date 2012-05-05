@@ -224,3 +224,16 @@ void ofxGameCamera::loadCameraPosition()
 
 }
 
+void ofxGameCamera::reset(){
+ 	rotationX = 0.0f;
+	rotationY = 0.0f;
+	rotationZ = 0.0f;
+    
+	targetXRot = 0.0f;
+	targetYRot = 0.0f;
+	targetZRot = 0.0f;
+    
+    targetNode.setPosition(ofVec3f(0,0,0));
+    targetNode.setOrientation(ofQuaternion());
+
+}
