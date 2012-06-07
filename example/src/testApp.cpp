@@ -9,6 +9,8 @@ void testApp::setup(){
 		nodes.push_back(n);
 	}
 	
+    camera.setup(); // initialize the camera and register its update listener
+    
 //	camera.autosavePosition = true;
 //	camera.loadCameraPosition();	
 }
