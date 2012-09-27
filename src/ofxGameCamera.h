@@ -58,4 +58,5 @@ class ofxGameCamera : public ofCamera {
 	void loadCameraPosition();
 	
 	void setAnglesFromOrientation();
+    void reset();
 };

@@ -8,7 +8,8 @@ void testApp::setup(){
 		n.setPosition(ofVec3f(ofRandom(-ofGetWidth(),ofGetWidth()), ofRandom(-ofGetHeight(), ofGetHeight()), ofRandom(-1000, 1000)));
 		nodes.push_back(n);
 	}
-	
+    
+	camera.setup();
 //	camera.autosavePosition = true;
 //	camera.loadCameraPosition();	
 }
