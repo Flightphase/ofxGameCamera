@@ -17,7 +17,8 @@ class ofxGameCamera : public ofCamera {
 	ofxGameCamera();
 
 	void setup();
-    
+    bool dampen;
+	bool invertControls;
     void update(ofEventArgs& args);
     
 	float sensitivityX;
@@ -46,7 +47,7 @@ class ofxGameCamera : public ofCamera {
 	
 	ofVec2f lastMouse;
 	bool usemouse;
-
+	bool justResetAngles;
 	bool useArrowKeys;
 	bool autosavePosition;
 	bool applyRotation;

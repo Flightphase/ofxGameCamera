@@ -18,7 +18,7 @@ static float ClampAngle (float angle, float min, float max) {
 
 
 ofxGameCamera::ofxGameCamera() {
-	
+	dampen = false;
 	sensitivityX = 0.15f;
 	sensitivityY = 0.15f;
 
@@ -39,7 +39,8 @@ ofxGameCamera::ofxGameCamera() {
 	speed = 10.0f;
 	
 	lastMouse = ofVec2f(0,0);
-
+	
+	invertControls = false;
 	usemouse = true;
 	autosavePosition = false;
 	useArrowKeys = true;
@@ -48,7 +49,7 @@ ofxGameCamera::ofxGameCamera() {
 	applyTranslation = true;
 
 	rollSpeed = 2;
-
+	justResetAngles = false;
 
 	cameraPositionFile =  "_gameCameraPosition.xml";
 }
@@ -61,40 +62,62 @@ void ofxGameCamera::update(ofEventArgs& args){
     
     ofVec3f startPos = getPosition();
 	ofVec2f startRot = ofVec3f(rotationX, rotationY, rotationZ);
-    
+    int multiplier = invertControls ? -1 : 1;
 	//forward
     if(applyTranslation){
         if(ofGetKeyPressed('w') || (useArrowKeys && ofGetKeyPressed(OF_KEY_UP)) ){
-            targetNode.dolly(-speed);
-			//dolly(-speed);
+			if(dampen){
+	            targetNode.dolly(-speed);
+			}else{
+				dolly(-speed);
+			}
         }
         
         if(ofGetKeyPressed('s') || (useArrowKeys && ofGetKeyPressed(OF_KEY_DOWN)) ){
-            targetNode.dolly(speed);
-			//dolly(speed);
+			if(dampen){
+	            targetNode.dolly(speed);
+			}else{
+				dolly(speed);
+			}
         }
         
         if(ofGetKeyPressed('a') || (useArrowKeys && ofGetKeyPressed(OF_KEY_LEFT)) ){
-            targetNode.truck(-speed);
-			//truck(-speed);
+			if(dampen){
+	            targetNode.truck(-speed);
+			}else{
+				truck(-speed);
+			}
         }
         
         if(ofGetKeyPressed('d') || (useArrowKeys && ofGetKeyPressed(OF_KEY_RIGHT)) ){
-            targetNode.truck(speed);
-			//truck(speed);
+			if(dampen){
+	            targetNode.truck(speed);
+			}
+			else{
+				truck(speed);
+			}
         }
         
         if(ofGetKeyPressed('c') || (useArrowKeys && ofGetKeyPressed(OF_KEY_PAGE_DOWN)) ){
-            targetNode.boom(-speed);
-			//boom(-speed);
+			if(dampen){
+	            targetNode.boom(-speed*multiplier);
+			}
+			else{
+				boom(-speed*multiplier);
+			}
         }
         
         if(ofGetKeyPressed('e') || (useArrowKeys && ofGetKeyPressed(OF_KEY_PAGE_UP)) ){
-            targetNode.boom(speed);
+			if(dampen){
+	            targetNode.boom(speed*multiplier);
+			}else{
+				boom(speed*multiplier);
+			}
         }
 		
-		//TODO make variable
-		setPosition(getPosition() + (targetNode.getPosition() - getPosition()) *.2);
+		if(dampen){
+			setPosition(getPosition() + (targetNode.getPosition() - getPosition()) *.2);
+		}
 	}
 	
 	if(applyRotation){	
@@ -113,14 +136,18 @@ void ofxGameCamera::update(ofEventArgs& args){
     
 	ofVec2f mouse( ofGetMouseX(), ofGetMouseY() );
 	if(usemouse && applyRotation && ofGetMousePressed(0)){
-        
-		float dx = (mouse.x - lastMouse.x) * sensitivityX;
-		float dy = (mouse.y - lastMouse.y) * sensitivityY;
-		targetXRot += dx;
-		targetYRot += dy;
-		
-		targetYRot = ClampAngle(targetYRot, minimumY, maximumY);
-		targetXRot = ClampAngle(targetXRot, minimumX, maximumX);
+        if(!justResetAngles){
+
+			float dx = (mouse.x - lastMouse.x) * sensitivityX;
+			float dy = (mouse.y - lastMouse.y) * sensitivityY;
+//			cout << "b4 DX DY! " << dx << " " << dy << " " << targetXRot << " " << targetYRot << endl;
+			targetXRot += dx * (invertControls ? -1 : 1);
+			targetYRot += dy * (invertControls ? -1 : 1);
+//			targetYRot = ClampAngle(targetYRot, minimumY, maximumY);
+//			targetXRot = ClampAngle(targetXRot, minimumX, maximumX);
+//			cout << "after DX DY! " << dx << " " << dy << " " << targetXRot << " " << targetYRot << endl;
+		}
+		justResetAngles = false;
 	}
 	
 	if(applyRotation){
@@ -143,15 +170,24 @@ void ofxGameCamera::setAnglesFromOrientation(){
 	rotationX = targetXRot = -rotation.y;
 	rotationY = targetYRot = -rotation.z;
 	rotationZ = targetZRot = -rotation.x;
+//	cout << "rotation is " << ofVec3f(rotationX,rotationY,rotationZ) << endl;;
+	justResetAngles = true;
 }
 
-void ofxGameCamera::updateRotation()
-{
-	rotationX += (targetXRot - rotationX) *.2;
-	rotationY += (targetYRot - rotationY) *.2;
-	rotationZ += (targetZRot - rotationZ) *.2;
+void ofxGameCamera::updateRotation(){
+//	cout << "update rotation!" << endl;
+	if(dampen){
+		rotationX += (targetXRot - rotationX) *.2;
+		rotationY += (targetYRot - rotationY) *.2;
+		rotationZ += (targetZRot - rotationZ) *.2;
+	}
+	else{
+		rotationX = targetXRot;
+		rotationY = targetYRot;
+		rotationZ = targetZRot;
+	}
 	
-	setOrientation(ofQuaternion(0,0,0,1)); //reset	
+	setOrientation(ofQuaternion(0,0,0,1)); //reset
 	setOrientation(getOrientationQuat() * ofQuaternion(-rotationZ, getZAxis()));
 	setOrientation(getOrientationQuat() * ofQuaternion(-rotationX, getYAxis()));
 	setOrientation(getOrientationQuat() * ofQuaternion(-rotationY, getXAxis()));
