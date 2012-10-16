@@ -51,89 +51,94 @@ ofxGameCamera::ofxGameCamera() {
 	rollSpeed = 2;
 	justResetAngles = false;
 
+	positionChanged = false;
+	rotationChanged = false;
+
 	cameraPositionFile =  "_gameCameraPosition.xml";
 }
 
 void ofxGameCamera::setup(){
 	ofAddListener(ofEvents().update, this, &ofxGameCamera::update);
+	ofAddListener(ofEvents().keyPressed, this, &ofxGameCamera::keyPressed);
 }
 
 void ofxGameCamera::update(ofEventArgs& args){	
-    
-    ofVec3f startPos = getPosition();
-	ofVec2f startRot = ofVec3f(rotationX, rotationY, rotationZ);
-    int multiplier = invertControls ? -1 : 1;
-	//forward
-    if(applyTranslation){
-        if(ofGetKeyPressed('w') || (useArrowKeys && ofGetKeyPressed(OF_KEY_UP)) ){
+	rotationChanged = false;
+	positionChanged = false;
+	if(applyTranslation){
+		int multiplier = invertControls ? -1 : 1;
+		if(ofGetKeyPressed('w') || (useArrowKeys && ofGetKeyPressed(OF_KEY_UP)) ){
 			if(dampen){
-	            targetNode.dolly(-speed);
+				targetNode.dolly(-speed);
 			}else{
 				dolly(-speed);
 			}
-        }
-        
-        if(ofGetKeyPressed('s') || (useArrowKeys && ofGetKeyPressed(OF_KEY_DOWN)) ){
+			positionChanged = true;
+		}
+		
+		if(ofGetKeyPressed('s') || (useArrowKeys && ofGetKeyPressed(OF_KEY_DOWN)) ){
 			if(dampen){
-	            targetNode.dolly(speed);
+				targetNode.dolly(speed);
 			}else{
 				dolly(speed);
 			}
-        }
-        
-        if(ofGetKeyPressed('a') || (useArrowKeys && ofGetKeyPressed(OF_KEY_LEFT)) ){
+			positionChanged = true;
+		}
+		
+		if(ofGetKeyPressed('a') || (useArrowKeys && ofGetKeyPressed(OF_KEY_LEFT)) ){
 			if(dampen){
-	            targetNode.truck(-speed);
+				targetNode.truck(-speed);
 			}else{
 				truck(-speed);
 			}
-        }
-        
-        if(ofGetKeyPressed('d') || (useArrowKeys && ofGetKeyPressed(OF_KEY_RIGHT)) ){
+			positionChanged = true;
+		}
+		
+		if(ofGetKeyPressed('d') || (useArrowKeys && ofGetKeyPressed(OF_KEY_RIGHT)) ){
 			if(dampen){
-	            targetNode.truck(speed);
+				targetNode.truck(speed);
 			}
 			else{
 				truck(speed);
 			}
-        }
-        
-        if(ofGetKeyPressed('c') || (useArrowKeys && ofGetKeyPressed(OF_KEY_PAGE_DOWN)) ){
+			positionChanged = true;
+		}
+		
+		if(ofGetKeyPressed('c') || (useArrowKeys && ofGetKeyPressed(OF_KEY_PAGE_DOWN)) ){
 			if(dampen){
-	            targetNode.boom(-speed*multiplier);
+				targetNode.boom(-speed*multiplier);
 			}
 			else{
 				boom(-speed*multiplier);
 			}
-        }
-        
-        if(ofGetKeyPressed('e') || (useArrowKeys && ofGetKeyPressed(OF_KEY_PAGE_UP)) ){
+			positionChanged = true;
+		}
+		
+		if(ofGetKeyPressed('e') || (useArrowKeys && ofGetKeyPressed(OF_KEY_PAGE_UP)) ){
 			if(dampen){
-	            targetNode.boom(speed*multiplier);
-			}else{
+				targetNode.boom(speed*multiplier);
+			}
+			else{
 				boom(speed*multiplier);
 			}
-        }
-		
-		if(dampen){
-			setPosition(getPosition() + (targetNode.getPosition() - getPosition()) *.2);
+			positionChanged = true;
 		}
 	}
 	
-	if(applyRotation){	
+	if(applyRotation){
 		if(ofGetKeyPressed('r')){
 			targetZRot += rollSpeed;
-            applyRotation = true;
-            //			updateRotation();		
-        }
+			rotationChanged = true;
+		}
 		if(ofGetKeyPressed('q')){
 			targetZRot -= rollSpeed;
-            //			updateRotation();	
-            applyRotation = true;
+			rotationChanged = true;
 		}
 	}
 	
-    
+	if(dampen){
+		setPosition(getPosition() + (targetNode.getPosition() - getPosition()) *.2);
+	}
 	ofVec2f mouse( ofGetMouseX(), ofGetMouseY() );
 	if(usemouse && applyRotation && ofGetMousePressed(0)){
         if(!justResetAngles){
@@ -146,19 +151,25 @@ void ofxGameCamera::update(ofEventArgs& args){
 //			targetYRot = ClampAngle(targetYRot, minimumY, maximumY);
 //			targetXRot = ClampAngle(targetXRot, minimumX, maximumX);
 //			cout << "after DX DY! " << dx << " " << dy << " " << targetXRot << " " << targetYRot << endl;
+			rotationChanged = true;
 		}
 		justResetAngles = false;
 	}
 	
-	if(applyRotation){
+	if(rotationChanged){
 		updateRotation();		
 	}
 	
 	lastMouse = mouse;
     
-	if(!ofGetMousePressed(0) && autosavePosition && (startPos != getPosition() || startRot != ofVec3f(rotationX, rotationY, rotationZ))){
+	if(!ofGetMousePressed(0) && autosavePosition && (rotationChanged || positionChanged)){
 		saveCameraPosition();
 	}
+}
+
+void ofxGameCamera::keyPressed(ofKeyEventArgs& args){
+	
+   
 }
 
 void ofxGameCamera::begin(ofRectangle rect) { 
@@ -175,6 +186,9 @@ void ofxGameCamera::setAnglesFromOrientation(){
 }
 
 void ofxGameCamera::updateRotation(){
+	
+	if(!applyRotation) return;
+	
 //	cout << "update rotation!" << endl;
 	if(dampen){
 		rotationX += (targetXRot - rotationX) *.2;

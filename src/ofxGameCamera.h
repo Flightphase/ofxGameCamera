@@ -20,7 +20,8 @@ class ofxGameCamera : public ofCamera {
     bool dampen;
 	bool invertControls;
     void update(ofEventArgs& args);
-    
+    void keyPressed(ofKeyEventArgs& args);
+	
 	float sensitivityX;
 	float sensitivityY;
 	
@@ -57,6 +58,8 @@ class ofxGameCamera : public ofCamera {
 	void saveCameraPosition();
 	void loadCameraPosition();
 	
+	bool positionChanged;
+	bool rotationChanged;
 	void setAnglesFromOrientation();
     void reset();
 };
