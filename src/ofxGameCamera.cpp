@@ -242,7 +242,8 @@ void ofxGameCamera::loadCameraPosition()
 {
 	ofxXmlSettings loadPosition;
 	if(loadPosition.loadFile(cameraPositionFile)){
-
+		bool apply = applyRotation;
+		applyRotation = true;
 		loadPosition.pushTag("camera");
 		loadPosition.pushTag("position");
 		// tig: defaulting with floats so as to get floats back.
@@ -267,6 +268,7 @@ void ofxGameCamera::loadCameraPosition()
 		loadPosition.popTag(); //pop camera;
 
 		updateRotation();
+		applyRotation = apply;
 	}
 	else{
 		ofLog(OF_LOG_ERROR, "ofxGameCamera: couldn't load position!");
