@@ -42,10 +42,12 @@ class ofxGameCamera : public ofCamera {
 	float rollSpeed;
 	float speed;
 	
-	virtual void begin(ofRectangle rect = ofGetWindowRect());
 	void updateRotation();
 	ofNode targetNode;
 	
+	ofVec3f currentUp;
+	ofVec3f currLookTarget;
+
 	ofVec2f lastMouse;
 	bool usemouse;
 	bool justResetAngles;
