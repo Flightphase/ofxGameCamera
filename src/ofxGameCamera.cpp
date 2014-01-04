@@ -28,14 +28,6 @@ ofxGameCamera::ofxGameCamera() {
 	minimumY = -60.0f;
 	maximumY =  60.0f;
 
-	rotationX = 0.0f;
-	rotationY = 0.0f;
-	rotationZ = 0.0f;
-
-	targetXRot = 0.0f;
-	targetYRot = 0.0f;
-	targetZRot = 0.0f;
-	
 	speed = 10.0f;
 	
 	lastMouse = ofVec2f(0,0);
@@ -51,12 +43,10 @@ ofxGameCamera::ofxGameCamera() {
 	rollSpeed = 2;
 	justResetAngles = false;
 
-	positionChanged = false;
-	rotationChanged = false;
-
 	currentUp = ofVec3f(0,1,0);
 	currLookTarget = ofVec3f(0,0,-1);
 	lookAt(currLookTarget, currentUp);
+	
 	cameraPositionFile =  "_gameCameraPosition.xml";
 }
 
@@ -66,64 +56,37 @@ void ofxGameCamera::setup(){
 }
 
 void ofxGameCamera::update(ofEventArgs& args){	
-	rotationChanged = false;
-	positionChanged = false;
+	bool rotationChanged = false;
+	bool positionChanged = false;
 	if(applyTranslation){
 		int multiplier = invertControls ? -1 : 1;
 		if(ofGetKeyPressed('w') || (useArrowKeys && ofGetKeyPressed(OF_KEY_UP)) ){
-			if(dampen){
-				targetNode.dolly(-speed);
-			}else{
-				dolly(-speed);
-			}
+			dolly(-speed);
 			positionChanged = true;
 		}
 		
 		if(ofGetKeyPressed('s') || (useArrowKeys && ofGetKeyPressed(OF_KEY_DOWN)) ){
-			if(dampen){
-				targetNode.dolly(speed);
-			}else{
-				dolly(speed);
-			}
+			dolly(speed);
 			positionChanged = true;
 		}
 		
 		if(ofGetKeyPressed('a') || (useArrowKeys && ofGetKeyPressed(OF_KEY_LEFT)) ){
-			if(dampen){
-				targetNode.truck(-speed);
-			}else{
-				truck(-speed);
-			}
+			truck(-speed);
 			positionChanged = true;
 		}
 		
 		if(ofGetKeyPressed('d') || (useArrowKeys && ofGetKeyPressed(OF_KEY_RIGHT)) ){
-			if(dampen){
-				targetNode.truck(speed);
-			}
-			else{
-				truck(speed);
-			}
+			truck(speed);
 			positionChanged = true;
 		}
 		
 		if(ofGetKeyPressed('c') || (useArrowKeys && ofGetKeyPressed(OF_KEY_PAGE_DOWN)) ){
-			if(dampen){
-				targetNode.boom(-speed*multiplier);
-			}
-			else{
-				boom(-speed*multiplier);
-			}
+			boom(-speed*multiplier);
 			positionChanged = true;
 		}
 		
 		if(ofGetKeyPressed('e') || (useArrowKeys && ofGetKeyPressed(OF_KEY_PAGE_UP)) ){
-			if(dampen){
-				targetNode.boom(speed*multiplier);
-			}
-			else{
-				boom(speed*multiplier);
-			}
+			boom(speed*multiplier);
 			positionChanged = true;
 		}
 	}
@@ -134,20 +97,12 @@ void ofxGameCamera::update(ofEventArgs& args){
 	}
 
 
-	if(dampen){
-		//setPosition(getPosition() + (targetNode.getPosition() - getPosition()) *.2);
-	}
-
 	ofVec2f mouse( ofGetMouseX(), ofGetMouseY() );
 	if(usemouse && applyRotation && ofGetMousePressed(0)){
         if(!justResetAngles){
 
 			float dx = (mouse.x - lastMouse.x) * sensitivityX;
 			float dy = (mouse.y - lastMouse.y) * sensitivityY;
-
-//			cout << "b4 DX DY! " << dx << " " << dy << " " << targetXRot << " " << targetYRot << endl;
-			//targetXRot += dx * (invertControls ? -1 : 1);
-			//targetYRot += dy * (invertControls ? -1 : 1);
 
 			currLookTarget.rotate(-dx, getPosition(), currentUp);
 			ofVec3f sideVec = (currentUp).getCrossed(currLookTarget - getPosition());
@@ -157,9 +112,6 @@ void ofxGameCamera::update(ofEventArgs& args){
 			currentUp = ( currLookTarget - getPosition()  ).getCrossed(sideVec);
 			lookAt(currLookTarget, currentUp);
 
-//			targetYRot = ClampAngle(targetYRot, minimumY, maximumY);
-//			targetXRot = ClampAngle(targetXRot, minimumX, maximumX);
-//			cout << "after DX DY! " << dx << " " << dy << " " << targetXRot << " " << targetYRot << endl;
 			rotationChanged = true;
 		}
 		justResetAngles = false;
@@ -188,10 +140,6 @@ void ofxGameCamera::update(ofEventArgs& args){
 		 << "	vec to look " << (currLookTarget-getPosition()) << endl;
 	 */
 
-	if(rotationChanged){
-		//updateRotation();		
-	}
-	
 	lastMouse = mouse;
     
 	if(!ofGetMousePressed(0) && autosavePosition && (rotationChanged || positionChanged)){
@@ -203,40 +151,11 @@ void ofxGameCamera::keyPressed(ofKeyEventArgs& args){
 	
 }
 
-void ofxGameCamera::setAnglesFromOrientation(){
-	ofVec3f rotation = getOrientationEuler();
-	rotationX = targetXRot = -rotation.y;
-	rotationY = targetYRot = -rotation.z;
-	rotationZ = targetZRot = -rotation.x;
-//	cout << "rotation is " << ofVec3f(rotationX,rotationY,rotationZ) << endl;;
+void ofxGameCamera::movedManually(){
+	
+	currLookTarget = getPosition() + getLookAtDir();
+	currentUp = getUpDir();
 	justResetAngles = true;
-}
-
-void ofxGameCamera::updateRotation(){
-	
-	if(!applyRotation) return;
-	
-//	cout << "update rotation!" << endl;
-	if(dampen){
-		rotationX += (targetXRot - rotationX) *.2;
-		rotationY += (targetYRot - rotationY) *.2;
-		rotationZ += (targetZRot - rotationZ) *.2;
-	}
-	else{
-		rotationX = targetXRot;
-		rotationY = targetYRot;
-		rotationZ = targetZRot;
-	}
-	
-	//ofMatrix4x4 m = ofMatrix4x4::makeRotationMatrix(rotationX,rotationY,rotationZ);
-/*
-	setOrientation(ofQuaternion(0,0,0,1)); //reset
-	setOrientation(getOrientationQuat() * ofQuaternion(-rotationZ, getZAxis()));
-	setOrientation(getOrientationQuat() * ofQuaternion(-rotationX, getYAxis()));
-	setOrientation(getOrientationQuat() * ofQuaternion(-rotationY, getXAxis()));
-	*/
-
-	//targetNode.setOrientation(getOrientationQuat());
 }
 
 void ofxGameCamera::saveCameraPosition()
@@ -312,4 +231,6 @@ void ofxGameCamera::reset(){
 
     setPosition(ofVec3f(0,0,0));
     setOrientation(ofQuaternion());
+	
+	movedManually();
 }
