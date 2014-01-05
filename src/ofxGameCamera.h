@@ -60,11 +60,12 @@ protected:
 	
 	ofQuaternion lastRot;
 	ofVec3f lastPos;
-	
+
 	void updateRotation();
 
 	ofVec2f lastMouse;
 	bool justResetAngles;
+	bool unsavedChanges;
 	
 	string cameraPositionFile;
 	
