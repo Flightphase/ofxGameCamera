@@ -58,6 +58,9 @@ protected:
 	ofVec3f currentUp;
 	ofVec3f currLookTarget;
 	
+	ofQuaternion lastRot;
+	ofVec3f lastPos;
+	
 	void updateRotation();
 
 	ofVec2f lastMouse;

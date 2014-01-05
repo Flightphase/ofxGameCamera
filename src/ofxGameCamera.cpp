@@ -58,6 +58,14 @@ void ofxGameCamera::setup(){
 void ofxGameCamera::update(ofEventArgs& args){	
 	bool rotationChanged = false;
 	bool positionChanged = false;
+	
+	//lastRot == lastRot << this is nananers check
+	if( (lastRot == lastRot && lastRot != getOrientationQuat()) ||
+	    (lastPos == lastPos && lastPos != getPosition()))
+	{
+		movedManually();
+	}
+
 	if(applyTranslation){
 		int multiplier = invertControls ? -1 : 1;
 		if(ofGetKeyPressed('w') || (useArrowKeys && ofGetKeyPressed(OF_KEY_UP)) ){
@@ -98,8 +106,8 @@ void ofxGameCamera::update(ofEventArgs& args){
 
 
 	ofVec2f mouse( ofGetMouseX(), ofGetMouseY() );
-	if(usemouse && applyRotation && ofGetMousePressed(0)){
-        if(!justResetAngles){
+	if(!justResetAngles){
+		if(usemouse && applyRotation && ofGetMousePressed(0)){
 
 			float dx = (mouse.x - lastMouse.x) * sensitivityX;
 			float dy = (mouse.y - lastMouse.y) * sensitivityY;
@@ -113,38 +121,40 @@ void ofxGameCamera::update(ofEventArgs& args){
 			lookAt(currLookTarget, currentUp);
 
 			rotationChanged = true;
+
 		}
-		justResetAngles = false;
+
+		if(applyRotation){
+			if(ofGetKeyPressed('r')){
+				currentUp.rotate(rollSpeed,getLookAtDir());
+				lookAt(currLookTarget, currentUp);
+			}
+			if(ofGetKeyPressed('q')){
+				currentUp.rotate(-rollSpeed,getLookAtDir());
+				lookAt(currLookTarget, currentUp);
+			}
+		}
 	}
 
-	if(applyRotation){
-		if(ofGetKeyPressed('r')){
-			currentUp.rotate(rollSpeed,getLookAtDir());
-			lookAt(currLookTarget, currentUp);
-			//targetZRot += rollSpeed;
-			//rotationChanged = true;
-		}
-		if(ofGetKeyPressed('q')){
-			currentUp.rotate(-rollSpeed,getLookAtDir());
-			lookAt(currLookTarget, currentUp);
-			//targetZRot -= rollSpeed;
-			//rotationChanged = true;
+	lastMouse = mouse;
+	justResetAngles = false;
+	lastRot = getOrientationQuat();
+	lastPos = getPosition();
+	
+    if(rotationChanged || positionChanged){
+		if(!ofGetMousePressed(0) && autosavePosition){
+			saveCameraPosition();
 		}
 	}
 	
 	/*
-	cout << "STATS:" << endl 
-		 << "	position" << getPosition() << endl 
-		 << "	current up vec " << currentUp << endl 
-		 << "	current look " << currLookTarget << endl 
-		 << "	vec to look " << (currLookTarget-getPosition()) << endl;
+	 cout << "STATS:" << endl
+	 << "	position" << getPosition() << endl
+	 << "	current up vec " << currentUp << endl
+	 << "	current look " << currLookTarget << endl
+	 << "	vec to look " << (currLookTarget-getPosition()) << endl;
 	 */
-
-	lastMouse = mouse;
-    
-	if(!ofGetMousePressed(0) && autosavePosition && (rotationChanged || positionChanged)){
-		saveCameraPosition();
-	}
+	
 }
 
 void ofxGameCamera::keyPressed(ofKeyEventArgs& args){
