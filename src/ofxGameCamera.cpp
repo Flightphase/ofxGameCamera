@@ -47,15 +47,25 @@ ofxGameCamera::ofxGameCamera() {
 	
 	cameraPositionFile =  "_gameCameraPosition.xml";
 	
-
+    eventsRegistered = false;
+}
+ofxGameCamera::~ofxGameCamera(){
+    if(eventsRegistered){
+        ofAddListener(ofEvents().update, this, &ofxGameCamera::update);
+        ofAddListener(ofEvents().keyPressed, this, &ofxGameCamera::keyPressed);
+        eventsRegistered = false;
+    }
 }
 
 void ofxGameCamera::setup(){
-	ofAddListener(ofEvents().update, this, &ofxGameCamera::update);
-	ofAddListener(ofEvents().keyPressed, this, &ofxGameCamera::keyPressed);
+    if(!eventsRegistered){
+        ofAddListener(ofEvents().update, this, &ofxGameCamera::update);
+        ofAddListener(ofEvents().keyPressed, this, &ofxGameCamera::keyPressed);
+        eventsRegistered = true;
+    }
 }
 
-void ofxGameCamera::update(ofEventArgs& args){	
+void ofxGameCamera::update(ofEventArgs& args){
 	bool rotationChanged = false;
 	bool positionChanged = false;
 	
