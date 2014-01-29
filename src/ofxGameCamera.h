@@ -17,7 +17,8 @@ class ofxGameCamera : public ofCamera {
   public:
 	
 	ofxGameCamera();
-
+    ~ofxGameCamera();
+    
 	void setup();
     void update(ofEventArgs& args);
     void keyPressed(ofKeyEventArgs& args);
@@ -54,17 +55,20 @@ class ofxGameCamera : public ofCamera {
 	bool dampen;
 	//GOTTA REIMPLEMENT
 protected:
-	
+    
+	bool eventsRegistered;
+    
 	ofVec3f currentUp;
 	ofVec3f currLookTarget;
 	
 	ofQuaternion lastRot;
 	ofVec3f lastPos;
-	
+
 	void updateRotation();
 
 	ofVec2f lastMouse;
 	bool justResetAngles;
+	bool unsavedChanges;
 	
 	string cameraPositionFile;
 	
