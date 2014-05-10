@@ -51,8 +51,8 @@ ofxGameCamera::ofxGameCamera() {
 	rollSpeed = 2;
 	justResetAngles = false;
 
-	positionChanged = false;
-	rotationChanged = false;
+//	positionChanged = false;
+//	rotationChanged = false;
 
 	cameraPositionFile =  "_gameCameraPosition.xml";
 }
@@ -63,8 +63,9 @@ void ofxGameCamera::setup(){
 }
 
 void ofxGameCamera::update(ofEventArgs& args){	
-	rotationChanged = false;
-	positionChanged = false;
+	bool rotationChanged = false;
+	bool positionChanged = false;
+	
 	if(applyTranslation){
 		int multiplier = invertControls ? -1 : 1;
 		if(ofGetKeyPressed('w') || (useArrowKeys && ofGetKeyPressed(OF_KEY_UP)) ){

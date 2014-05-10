@@ -58,8 +58,8 @@ class ofxGameCamera : public ofCamera {
 	void saveCameraPosition();
 	void loadCameraPosition();
 	
-	bool positionChanged;
-	bool rotationChanged;
+//	bool positionChanged;
+//	bool rotationChanged;
 	void setAnglesFromOrientation();
     void reset();
 };
