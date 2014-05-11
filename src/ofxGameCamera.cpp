@@ -20,6 +20,7 @@ static float ClampAngle (float angle, float min, float max) {
 ofxGameCamera::ofxGameCamera() {
 	dampen = false;
 	eventsRegistered = false;
+	ignoreNextMouseMove = false;
 	
 	sensitivityX = 0.15f;
 	sensitivityY = 0.15f;
@@ -159,9 +160,7 @@ void ofxGameCamera::update(ofEventArgs& args){
 			float dy = (mouse.y - lastMouse.y) * sensitivityY;
 			targetXRot += dx * (invertControls ? -1 : 1);
 			targetYRot += dy * (invertControls ? -1 : 1);
-//			targetYRot = ClampAngle(targetYRot, minimumY, maximumY);
-//			targetXRot = ClampAngle(targetXRot, minimumX, maximumX);
-//			cout << "after DX DY! " << dx << " " << dy << " " << targetXRot << " " << targetYRot << endl;
+			
 			rotationChanged = true;
 		}
 		justResetAngles = false;
@@ -182,7 +181,10 @@ void ofxGameCamera::update(ofEventArgs& args){
 }
 
 void ofxGameCamera::mousePressed(ofMouseEventArgs& args){
-	lastMouse = ofVec2f( args.x, args.y );
+	if(applyRotation){
+		lastMouse = ofVec2f( args.x, args.y );
+	}
+
 }
 
 void ofxGameCamera::begin(ofRectangle rect) {

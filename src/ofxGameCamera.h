@@ -21,6 +21,7 @@ class ofxGameCamera : public ofCamera {
 	bool invertControls;
     void update(ofEventArgs& args);
 	void mousePressed(ofMouseEventArgs& args);
+	
 	void exit(ofEventArgs& args);
 	
 	float sensitivityX;
@@ -66,5 +67,6 @@ class ofxGameCamera : public ofCamera {
 	ofQuaternion lastRotation;
 	ofVec3f lastPosition;
 	ofRectangle mouseRect;
+	bool ignoreNextMouseMove;
 
 };
