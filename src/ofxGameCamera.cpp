@@ -19,6 +19,8 @@ static float ClampAngle (float angle, float min, float max) {
 
 ofxGameCamera::ofxGameCamera() {
 	dampen = false;
+	eventsRegistered = false;
+	
 	sensitivityX = 0.15f;
 	sensitivityY = 0.15f;
 
@@ -54,15 +56,24 @@ ofxGameCamera::ofxGameCamera() {
 //	positionChanged = false;
 //	rotationChanged = false;
 
+
 	cameraPositionFile =  "_gameCameraPosition.xml";
 }
 
 void ofxGameCamera::setup(){
 	ofAddListener(ofEvents().update, this, &ofxGameCamera::update);
-	ofAddListener(ofEvents().keyPressed, this, &ofxGameCamera::keyPressed);
+	ofAddListener(ofEvents().mousePressed, this, &ofxGameCamera::mousePressed);
+	ofAddListener(ofEvents().exit, this, &ofxGameCamera::exit);
 }
 
-void ofxGameCamera::update(ofEventArgs& args){	
+void ofxGameCamera::update(ofEventArgs& args){
+	
+	ofVec2f mouse( ofGetMouseX(), ofGetMouseY() );
+
+	if(lastRotation != getOrientationQuat() || lastPosition != getPosition()){
+		setAnglesFromOrientation();
+	}
+
 	bool rotationChanged = false;
 	bool positionChanged = false;
 	
@@ -140,13 +151,12 @@ void ofxGameCamera::update(ofEventArgs& args){
 	if(dampen){
 		setPosition(getPosition() + (targetNode.getPosition() - getPosition()) *.2);
 	}
-	ofVec2f mouse( ofGetMouseX(), ofGetMouseY() );
+	
 	if(usemouse && applyRotation && ofGetMousePressed(0)){
         if(!justResetAngles){
 
 			float dx = (mouse.x - lastMouse.x) * sensitivityX;
 			float dy = (mouse.y - lastMouse.y) * sensitivityY;
-//			cout << "b4 DX DY! " << dx << " " << dy << " " << targetXRot << " " << targetYRot << endl;
 			targetXRot += dx * (invertControls ? -1 : 1);
 			targetYRot += dy * (invertControls ? -1 : 1);
 //			targetYRot = ClampAngle(targetYRot, minimumY, maximumY);
@@ -155,25 +165,28 @@ void ofxGameCamera::update(ofEventArgs& args){
 			rotationChanged = true;
 		}
 		justResetAngles = false;
+		lastMouse = mouse;
 	}
 	
 	if(rotationChanged){
 		updateRotation();		
 	}
-	
-	lastMouse = mouse;
     
 	if(!ofGetMousePressed(0) && autosavePosition && (rotationChanged || positionChanged)){
 		saveCameraPosition();
 	}
-}
-
-void ofxGameCamera::keyPressed(ofKeyEventArgs& args){
 	
-   
+	lastRotation = getOrientationQuat();
+	lastPosition = getPosition();
+
 }
 
-void ofxGameCamera::begin(ofRectangle rect) { 
+void ofxGameCamera::mousePressed(ofMouseEventArgs& args){
+	lastMouse = ofVec2f( args.x, args.y );
+}
+
+void ofxGameCamera::begin(ofRectangle rect) {
+	mouseRect = rect;
 	ofCamera::begin(rect);
 }
 
@@ -273,6 +286,12 @@ void ofxGameCamera::loadCameraPosition()
 		ofLog(OF_LOG_ERROR, "ofxGameCamera: couldn't load position!");
 	}
 
+}
+
+void ofxGameCamera::exit(ofEventArgs& args){
+	ofRemoveListener(ofEvents().exit, this, &ofxGameCamera::exit);
+	ofRemoveListener(ofEvents().mousePressed, this, &ofxGameCamera::mousePressed);
+	ofRemoveListener(ofEvents().update, this, &ofxGameCamera::update);
 }
 
 void ofxGameCamera::reset(){
